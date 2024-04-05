@@ -9,14 +9,9 @@ static rc_dbus_obj_t *rc_now, *rc_last;
 MCN_DECLARE(chassis_fdb);
 static McnNode_t chassis_fdb_node;
 static struct chassis_fdb_msg chassis_fdb;
-MCN_DECLARE(gimbal_fdb);
-static McnNode_t gimbal_fdb_node;
-static struct gimbal_fdb_msg gimbal_fdb;
 // 发布
 MCN_DECLARE(chassis_cmd);
 static struct chassis_cmd_msg chassis_cmd_data;
-MCN_DECLARE(gimbal_cmd);
-static struct gimbal_cmd_msg gimbal_cmd_data;
 
 static void cmd_pub_push(void);
 static void cmd_sub_init(void);
@@ -168,7 +163,6 @@ static void cmd_pub_push(void)
 {
     // data_content my_data = ;
     mcn_publish(MCN_HUB(chassis_cmd), &chassis_cmd_data);
-    mcn_publish(MCN_HUB(gimbal_cmd), &gimbal_cmd_data);
 }
 
 /**
@@ -177,7 +171,6 @@ static void cmd_pub_push(void)
 static void cmd_sub_init(void)
 {
     chassis_fdb_node = mcn_subscribe(MCN_HUB(chassis_fdb), NULL, NULL);
-    gimbal_fdb_node = mcn_subscribe(MCN_HUB(gimbal_fdb), NULL, NULL);
 }
 
 
@@ -190,8 +183,19 @@ static void cmd_sub_pull(void)
     {
         mcn_copy(MCN_HUB(chassis_fdb), chassis_fdb_node, &chassis_fdb);
     }
-    if (mcn_poll(gimbal_fdb_node))
+}
+
+int chassis_board_rx_callback(uint32_t id, uint8_t *data)
+{
+    switch (id)
     {
-        mcn_copy(MCN_HUB(gimbal_fdb), gimbal_fdb_node, &gimbal_fdb);
+    case CAN_RPY_TX:
+        chassis_cmd_data.offset_angle = *(float*)&data[0];
+        return 0;
+        break;
+    
+    default:
+        return -1;
+        break;
     }
 }

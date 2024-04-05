@@ -30,6 +30,13 @@ struct ins_msg
     float yaw_total_angle;
 };
 
+// TODO：后续优化启用，目前时间紧急，使用extern
+struct referee_msg
+{
+    robot_status_t robot_status;
+    ext_power_heat_data_t power_heat_data_t;
+};
+
 /* ----------------CMD应用发布的控制数据,应当由gimbal/chassis/shoot订阅---------------- */
 /**
  * @brief cmd发布的底盘控制数据,由chassis订阅

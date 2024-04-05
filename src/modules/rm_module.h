@@ -20,7 +20,6 @@
 #include "lk_motor.h"
 #include "ht04.h"
 #include "drv_dwt.h"
-#include "rc_sbus.h"
 #include "drv_leg.h"
 #include "hal_can.h"
 #include "drv_PWM.h"
@@ -28,5 +27,6 @@
 #include "uMCN.h"
 #include "bsp_log.h"
 #include "rc_dbus.h"
+#include "Referee_system.h"
 
 #endif /* _RM_MODULE_H */

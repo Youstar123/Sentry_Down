@@ -9,7 +9,7 @@
 
 km_control_t km;
 
-int16_t delta_spd = MAX_CHASSIS_VX_SPEED*1.0f/KEY_ACC_TIME*GIMBAL_PERIOD;
+int16_t delta_spd = MAX_CHASSIS_VX_SPEED*1.0f/KEY_ACC_TIME*CHASSIS_PERIOD;
 
 /**
   * @brief     鼠标按键状态机
@@ -57,12 +57,12 @@ static void key_fsm(kb_state_e *sta, uint8_t key)
             {
                 if (sta == &km.lk_sta)
                 {
-                    if (km.lk_cnt++ > LONG_PRESS_TIME/GIMBAL_PERIOD)
+                    if (km.lk_cnt++ > LONG_PRESS_TIME/CHASSIS_PERIOD)
                         *sta = KEY_PRESS_LONG;
                 }
                 else
                 {
-                    if (km.rk_cnt++ > LONG_PRESS_TIME/GIMBAL_PERIOD)
+                    if (km.rk_cnt++ > LONG_PRESS_TIME/CHASSIS_PERIOD)
                         *sta = KEY_PRESS_LONG;
                 }
             }

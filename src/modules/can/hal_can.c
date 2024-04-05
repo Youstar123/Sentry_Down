@@ -12,6 +12,9 @@ extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 static CAN_TxHeaderTypeDef  tx_message;
 
+
+extern int chassis_board_rx_callback(uint32_t id, uint8_t *data);
+
 void CAN_send(CAN_HandleTypeDef *can, uint32_t send_id, uint8_t data[])
 {
     uint32_t send_mail_box;
@@ -82,6 +85,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
     while (HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO1)) // FIFO不为空,有可能在其他中断时有多帧数据进入
     {
         HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &rx_header, rx_data);
+        // TODO: 2024 RMUL 期间部署上下板间通讯，之后需要优化调整
         if (hcan == &hcan2)
         {
             if(dji_motot_rx_callback(rx_header.StdId, rx_data) == 0)
@@ -91,6 +95,9 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
                 return;
 
             if(lk_motot_rx_callback(rx_header.StdId, rx_data) == 0)
+                return;
+
+            if(chassis_board_rx_callback(rx_header.StdId, rx_data) == 0)
                 return;
         }
     }

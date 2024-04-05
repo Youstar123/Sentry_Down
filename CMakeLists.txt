@@ -70,15 +70,16 @@ include_directories(Core/Inc
         src/modules/motor/LK_motor
         src/modules/motor/HT_motor
         src/modules/pwm
-        src/modules/rc/sbus
         src/modules/rc/dbus
         src/modules/rc/keyboard
+        src/modules/referee_UI
         src/task
         src/task/ins
         src/task/motor
         src/task/cmd
         src/task/chassis
         src/task/trans
+        src/task/referee
         Middlewares/Third_Party/SEGGER/Config
         Middlewares/Third_Party/SEGGER/RTT
         Drivers/STM32F4xx_HAL_Driver/Inc Drivers/STM32F4xx_HAL_Driver/Inc/Legacy Middlewares/Third_Party/FreeRTOS/Source/include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F Middlewares/ST/STM32_USB_Device_Library/Core/Inc Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc Drivers/CMSIS/Device/ST/STM32F4xx/Include Drivers/CMSIS/Include)

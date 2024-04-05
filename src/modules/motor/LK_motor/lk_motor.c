@@ -73,7 +73,7 @@ static void motor_decode(lk_motor_object_t *motor, uint8_t *data)
         measure->total_round--;
     else if (measure->ecd - measure->last_ecd < -32768)
         measure->total_round++;
-    measure->total_angle = (measure->total_round * 2 * PI + measure->angle_single_round)*WHEEL_RADIUS;
+    measure->total_angle = (measure->total_round * 2 * PI + measure->angle_single_round)/**WHEEL_RADIUS*/;
 
 #ifdef LK_MOTOR_TEST
     decode_dt = dwt_get_time_ms() - decode_start;

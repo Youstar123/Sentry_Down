@@ -108,7 +108,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   dwt_init(168);
   CAN_service_init();
-  sbus_rc_init();
+  dbus_rc_init();
   BMI088_init(&hspi1);
   HAL_TIM_Base_Start_IT(&htim2);
   robot_init();
