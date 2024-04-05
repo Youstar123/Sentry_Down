@@ -27,8 +27,7 @@
 #define T_MAX 18.0f
 
 static uint8_t idx = 0; // register idx,是该文件的全局电机索引,在注册时使用
-/* 海泰电机的实例,此处仅保存指针,内存的分配将通过电机实例初始化时通过malloc()进行 */
-static ht_motor_object_t *ht_motor_obj[HT_MOTOR_CNT] = {NULL};
+static ht_motor_object_t ht_motor_obj[HT_MOTOR_CNT];
 static osThreadId ht_task_handle[HT_MOTOR_CNT];
 
 extern CAN_HandleTypeDef hcan1;
@@ -125,9 +124,9 @@ int ht_motot_rx_callback(uint32_t id, uint8_t *data){
    // 找到对应的实例后再调用motor_decode进行解析
    for (size_t i = 0; i < idx; ++i)
    {   /* 详见HT04电机手册反馈报文 */
-       if (ht_motor_obj[i]->tx_id == data[0])
+       if (ht_motor_obj[i].tx_id == data[0])
        {
-           motor_decode(ht_motor_obj[i], data);
+           motor_decode(&ht_motor_obj[i], data);
            return 0;
        }
    }
@@ -139,7 +138,7 @@ void ht_motor_disable_all()
 {
     for (size_t i = 0; i < idx; i++)
     {
-        motor_set_mode(ht_motor_obj[i], CMD_RESET_MODE);
+        motor_set_mode(&ht_motor_obj[i], CMD_RESET_MODE);
     }
 }
 
@@ -147,7 +146,7 @@ void ht_motor_enable_all()
 {
     for (size_t i = 0; i < idx; i++)
     {
-        motor_set_mode(ht_motor_obj[i], CMD_MOTOR_MODE);
+        motor_set_mode(&ht_motor_obj[i], CMD_MOTOR_MODE);
     }
 }
 
@@ -202,7 +201,7 @@ static void ht_motor_control(void const *parameter)
 void ht_controll_all_poll(void)
 {
     static uint8_t i;
-    ht_motor_control(ht_motor_obj[i++]);
+    ht_motor_control(&ht_motor_obj[i++]);
     if(i==4)
         i=0;
 }
@@ -220,9 +219,9 @@ void ht_motor_task_init()
         return;
     for (size_t i = 0; i < idx; i++)
     {
-        sprintf(name_buf, "%s%d", ht_task_name, ht_motor_obj[i]->tx_id);
+        sprintf(name_buf, "%s%d", ht_task_name, ht_motor_obj[i].tx_id);
         osThreadDef(name_buf, ht_motor_control, osPriorityNormal, 0, 128);
-        ht_task_handle[i] = osThreadCreate(osThread(name_buf), ht_motor_obj[i]);
+        ht_task_handle[i] = osThreadCreate(osThread(name_buf), &ht_motor_obj[i]);
     }
 }
 
@@ -233,38 +232,34 @@ void ht_motor_task_init()
  */
 ht_motor_object_t *ht_motor_register(motor_config_t *config, void *control)
 {
-    ht_motor_object_t *object = (ht_motor_object_t *)user_malloc(sizeof(ht_motor_object_t));
-    memset(object, 0, sizeof(ht_motor_object_t));
-
     // 对接用户配置的 motor_config
-    object->motor_type = config->motor_type;             // HT04
-    object->rx_id = config->rx_id;                       // 接收报文的ID(主收)
-    object->tx_id = config->tx_id;                       // 发送报文的ID(主发)
-    object->control = control;                           // 电机控制器执行
-    object->set_mode = motor_set_mode;                   // 对接电机设置参数方法
+    ht_motor_obj[idx].motor_type = config->motor_type;             // HT04
+    ht_motor_obj[idx].rx_id = config->rx_id;                       // 接收报文的ID(主收)
+    ht_motor_obj[idx].tx_id = config->tx_id;                       // 发送报文的ID(主发)
+    ht_motor_obj[idx].control = control;                           // 电机控制器执行
+    ht_motor_obj[idx].set_mode = motor_set_mode;                   // 对接电机设置参数方法
     // 电机挂载CAN总线
     switch (config->can_id)
     {
     case 1:
-        object->can = &hcan1;
+        ht_motor_obj[idx].can = &hcan1;
         break;
     case 2:
-        object->can = &hcan2;
+        ht_motor_obj[idx].can = &hcan2;
         break;
     default:
         break;
     }
 
     osSemaphoreDef(turn_Sem);
-    object->turn_complete = osSemaphoreCreate(osSemaphore(turn_Sem), 1);  // 初始化信号量
+    ht_motor_obj[idx].turn_complete = osSemaphoreCreate(osSemaphore(turn_Sem), 1);  // 初始化信号量
     // 电机离线检测定时器相关
 
-    object->ctrl_mode = CMD_RESET_MODE;
-    object->to_mode = CMD_RESET_MODE;
-    motor_set_mode(object, CMD_RESET_MODE);   // 初始化为 RESET 模式
-    ht_motor_obj[idx++] = object;
+    ht_motor_obj[idx].ctrl_mode = CMD_RESET_MODE;
+    ht_motor_obj[idx].to_mode = CMD_RESET_MODE;
+    motor_set_mode(&ht_motor_obj[idx], CMD_RESET_MODE);   // 初始化为 RESET 模式
 
-    return object;
+    return &ht_motor_obj[idx++];
 }
 
 
@@ -308,7 +303,7 @@ static void enable(void){
     static ht_motor_para_t set; // 电机控制器计算得到的控制参数m
     for (size_t i = 0; i < idx; i++)
     {
-        motor_set_mode(ht_motor_obj[i], CMD_MOTOR_MODE);
+        motor_set_mode(&ht_motor_obj[i], CMD_MOTOR_MODE);
     }
 }
 //MSH_CMD_EXPORT(enable, enter motor_mode);
@@ -316,7 +311,7 @@ static void enable(void){
 static void relax(void){
     for (size_t i = 0; i < idx; i++)
     {
-        motor_set_mode(ht_motor_obj[i], CMD_RESET_MODE);
+        motor_set_mode(&ht_motor_obj[i], CMD_RESET_MODE);
     }
 }
 //MSH_CMD_EXPORT(relax, out motor_mode);
@@ -324,7 +319,7 @@ static void relax(void){
 static void zero(void){
     for (size_t i = 0; i < idx; i++)
     {
-        motor_set_mode(ht_motor_obj[i], CMD_ZERO_POSITION);
+        motor_set_mode(&ht_motor_obj[i], CMD_ZERO_POSITION);
     }
 }
 //MSH_CMD_EXPORT(zero, set motor zero);

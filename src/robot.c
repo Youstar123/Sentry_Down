@@ -33,6 +33,7 @@ void robot_init()
     cmd_task_init();
     chassis_task_init();
     trans_task_init();
+    referee_UI_task_init();
 
     // 初始化完成,开启中断
     __enable_irq();

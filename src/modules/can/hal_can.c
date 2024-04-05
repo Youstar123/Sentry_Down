@@ -91,9 +91,6 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
             if(dji_motot_rx_callback(rx_header.StdId, rx_data) == 0)
                 return;
 
-            if(ht_motot_rx_callback(rx_header.StdId, rx_data) == 0)
-                return;
-
             if(lk_motot_rx_callback(rx_header.StdId, rx_data) == 0)
                 return;
 

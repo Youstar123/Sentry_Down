@@ -21,21 +21,25 @@
 #include "cmd_task.h"
 #include "chassis_task.h"
 #include "trans_task.h"
+#include "referee_task.h"
 
 /* ---------------------------------- 线程相关 ---------------------------------- */
 osThreadId insTaskHandle;
 osThreadId robotTaskHandle;
 osThreadId motorTaskHandle;
 osThreadId transTaskHandle;
+osThreadId refereeTaskHandle;
 
 void ins_task_entry(void const *argument);
 void motor_task_entry(void const *argument);
 void robot_task_entry(void const *argument);
 void trans_task_entry(void const *argument);
+void referee_task_entry(void const *argument);
 
 static float motor_dt;
 static float robot_dt;
 static float trans_dt;
+static float referee_dt;
 
 /**
  * @brief 初始化机器人任务,所有持续运行的任务都在这里初始化
@@ -54,6 +58,9 @@ void OS_task_init()
 
     osThreadDef(transtask, trans_task_entry, osPriorityNormal, 0, 1024);
     transTaskHandle = osThreadCreate(osThread(transtask), NULL);
+
+    osThreadDef(refereetask, referee_task_entry, osPriorityNormal, 0, 1024);
+    refereeTaskHandle = osThreadCreate(osThread(refereetask), NULL);
 }
 
 __attribute__((noreturn)) void motor_task_entry(void const *argument)
@@ -114,6 +121,37 @@ __attribute__((noreturn)) void robot_task_entry(void const *argument)
         trans_control_task();
 
         vTaskDelayUntil(&trans_wake_time, 1);
+    }
+}
+
+__attribute__((noreturn)) void referee_task_entry(void const *argument)
+{
+    /* USER CODE BEGIN RefereeTask */
+    static float referee_start;
+    static uint32_t referee_dwt = 0;
+    static float dt = 0;
+    static uint32_t count = 0;
+
+    // referee_UI_task_init();
+
+    dt = dwt_get_delta(&referee_dwt);
+    referee_start = dwt_get_time_ms();
+    
+    uint32_t referee_wake_time = osKernelSysTick();
+    PrintLog("[freeRTOS] Ins Task Start\n");
+    /* Infinite loop */
+    for(;;)
+    {
+/* ------------------------------ 调试监测线程调度 ------------------------------ */
+        referee_dt = dwt_get_time_ms() - referee_start;
+        referee_start = dwt_get_time_ms();
+/* ------------------------------ 调试监测线程调度 ------------------------------ */
+
+        dt = dwt_get_delta(&referee_dwt);
+
+        referee_control_task();
+
+        vTaskDelayUntil(&referee_wake_time, 10); // 100hz
     }
 }
 

@@ -175,14 +175,14 @@
 /* -------------------------------------------------------------------------- */
 /*                                   上下板间通讯                                   */
 /* -------------------------------------------------------------------------- */
-#define CAN_UP_TX_INFO 0x134
+#define CAN_UP_TX_INFO 0x334
 /* 上下板CAN通信的扩展标识符 */
-#define CAN_RPY_TX          0x140   /* 底盘跟随云台相对角度 */
+#define CAN_RPY_TX          0x340   /* 底盘跟随云台相对角度 */
 // #define CAN_ODOM_TX_ONE     0x141   /* odom数据帧第一帧 */
 // #define CAN_ODOM_TX_TWO     0x142   /* odom数据帧第二帧 */
 // #define CAN_ODOM_TX_THREE   0x143   /* odom数据帧第二帧 */
 
-#define CAN_GIM_STATE         0x145   /* 底盘状态数据 */
-#define CAN_REFEREE_INFO      0x148   /* 裁判系统数据 */
+#define CAN_GIM_STATE         0x345   /* 底盘状态数据 */
+#define CAN_REFEREE_INFO      0x348   /* 裁判系统数据 */
 
 #endif /* _RM_CONFIG_H */

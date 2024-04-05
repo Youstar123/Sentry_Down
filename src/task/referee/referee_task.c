@@ -57,32 +57,32 @@ void referee_UI_task_init(void)
 
     /* USER CODE BEGIN DataAnalysisTask */
     Referee_system_Init(RX_AgreementData_Buffer0,RX_AgreementData_Buffer1,Agreement_RX_BUF_NUM);
-    graphic_data_struct_t TEST_data;
+//     graphic_data_struct_t TEST_data;
 
-    UI_TCB * a = uiDrawGraphicsSeq(LINE,"4m",1,2,3,2,NONE,NONE,951,475,996,475,NONE,100);
-    UI_TCB * b= uiDrawGraphicsSeq(LINE,"4mv",1,2,3,2,NONE,NONE,973,471,973,479,NONE,100);
-    UI_TCB * c = uiDrawGraphicsSeq(LINE,"3m",1,2,3,2,NONE,NONE,951,490,1006,490,NONE,100);
-    UI_TCB * d = uiDrawGraphicsSeq(LINE,"3mv",1,2,3,2,NONE,NONE,978,494,978,486,NONE,100);
-    UI_TCB * e = uiDrawGraphicsSeq(LINE,"2m",1,2,3,2,NONE,NONE,931,500,1013,500,NONE,100);
-    UI_TCB * f = uiDrawGraphicsSeq(LINE,"2mv",1,2,3,2,NONE,NONE,972,498,972,502,NONE,100);
-    UI_TCB * g = uiDrawGraphicsSeq(LINE,"ver",1,2,3,2,NONE,NONE,972,400,972,550,NONE,100);
-    //准心30m/s
+//     UI_TCB * a = uiDrawGraphicsSeq(LINE,"4m",1,2,3,2,NONE,NONE,951,475,996,475,NONE,100);
+//     UI_TCB * b= uiDrawGraphicsSeq(LINE,"4mv",1,2,3,2,NONE,NONE,973,471,973,479,NONE,100);
+//     UI_TCB * c = uiDrawGraphicsSeq(LINE,"3m",1,2,3,2,NONE,NONE,951,490,1006,490,NONE,100);
+//     UI_TCB * d = uiDrawGraphicsSeq(LINE,"3mv",1,2,3,2,NONE,NONE,978,494,978,486,NONE,100);
+//     UI_TCB * e = uiDrawGraphicsSeq(LINE,"2m",1,2,3,2,NONE,NONE,931,500,1013,500,NONE,100);
+//     UI_TCB * f = uiDrawGraphicsSeq(LINE,"2mv",1,2,3,2,NONE,NONE,972,498,972,502,NONE,100);
+//     UI_TCB * g = uiDrawGraphicsSeq(LINE,"ver",1,2,3,2,NONE,NONE,972,400,972,550,NONE,100);
+//     //准心30m/s
 
-//字符
-    UI_TCB * sspin = uiDrawStringDataSeq("sspin",1,2,3,15,2,155,815,"spin",100);
-    UI_TCB * sfric = uiDrawStringDataSeq("sfric",1,2,3,15,2,155,755,"fric",200);
-    UI_TCB * scapopen = uiDrawStringDataSeq("scapopen",1,2,3,15,2,155,695,"cap_open",200);
-//    UI_TCB * s4 = uiDrawStringDataSeq("04",1,2,3,15,2,155,635,"s4",300);
-//    UI_TCB * s5 = uiDrawStringDataSeq("05",1,2,3,15,2,155,575,"s5",300);
-//    UI_TCB * s6 = uiDrawStringDataSeq("s6",1,2,3,14,2,1658,545,"supcap",300);
-//显示圆
-    UI_TCB * cspin = uiDrawGraphicsSeq(CIRCLE,"cspin",1,2,3,5,10,50,100,810,NONE,NONE,16,100);
-    UI_TCB * cfric = uiDrawGraphicsSeq(CIRCLE,"cfric",1,2,3,5,10,50,100,750,NONE,NONE,16,200);
-    UI_TCB * ccapopen = uiDrawGraphicsSeq(CIRCLE,"ccapopen",1,2,3,5,10,50,100,690,NONE,NONE,16,200);
-    UI_TCB * c4 = uiDrawGraphicsSeq(CIRCLE,"004",1,2,3,5,10,50,100,630,NONE,NONE,16,300);
-    UI_TCB * c5 = uiDrawGraphicsSeq(CIRCLE,"005",1,2,3,5,10,50,100,570,NONE,NONE,16,310);
-//超级电容
-    UI_TCB * supercap = uiDrawGraphicsSeq(ARC,"supercap",1,2,3,5,0,360,1700,540,65,65,NONE,10);
+// //字符
+//     UI_TCB * sspin = uiDrawStringDataSeq("sspin",1,2,3,15,2,155,815,"spin",100);
+//     UI_TCB * sfric = uiDrawStringDataSeq("sfric",1,2,3,15,2,155,755,"fric",200);
+//     UI_TCB * scapopen = uiDrawStringDataSeq("scapopen",1,2,3,15,2,155,695,"cap_open",200);
+// //    UI_TCB * s4 = uiDrawStringDataSeq("04",1,2,3,15,2,155,635,"s4",300);
+// //    UI_TCB * s5 = uiDrawStringDataSeq("05",1,2,3,15,2,155,575,"s5",300);
+// //    UI_TCB * s6 = uiDrawStringDataSeq("s6",1,2,3,14,2,1658,545,"supcap",300);
+// //显示圆
+//     UI_TCB * cspin = uiDrawGraphicsSeq(CIRCLE,"cspin",1,2,3,5,10,50,100,810,NONE,NONE,16,100);
+//     UI_TCB * cfric = uiDrawGraphicsSeq(CIRCLE,"cfric",1,2,3,5,10,50,100,750,NONE,NONE,16,200);
+//     UI_TCB * ccapopen = uiDrawGraphicsSeq(CIRCLE,"ccapopen",1,2,3,5,10,50,100,690,NONE,NONE,16,200);
+//     UI_TCB * c4 = uiDrawGraphicsSeq(CIRCLE,"004",1,2,3,5,10,50,100,630,NONE,NONE,16,300);
+//     UI_TCB * c5 = uiDrawGraphicsSeq(CIRCLE,"005",1,2,3,5,10,50,100,570,NONE,NONE,16,310);
+// //超级电容
+//     UI_TCB * supercap = uiDrawGraphicsSeq(ARC,"supercap",1,2,3,5,0,360,1700,540,65,65,NONE,10);
 }
 
 static void referee_UI_update_handle(void) {
