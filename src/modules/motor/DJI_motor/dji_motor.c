@@ -239,10 +239,10 @@ void dji_motor_control()
         if (sender_enable_flag[i])
         {
             if(i < 3){
-                CAN_send(&CAN_CHASSIS, motor->tx_id, send_msg[i].data);
+//                CAN_send(&CAN_CHASSIS, motor->tx_id, send_msg[i].data);
             }
             else{
-                CAN_send(&CAN_GIMBAL, motor->tx_id, send_msg[i].data);
+//                CAN_send(&CAN_GIMBAL, motor->tx_id, send_msg[i].data);
             }
         }
     }
@@ -281,8 +281,6 @@ dji_motor_object_t *dji_motor_register(motor_config_t *config, void *control)
     motor_send_grouping(object, config);
 
     // 电机离线检测定时器相关
-
-
     dji_motor_enable(object);
     dji_motor_obj[idx++] = object;
     return object;

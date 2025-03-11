@@ -18,10 +18,9 @@ typedef enum
     CHASSIS_INIT,           //底盘归中初始化
     CHASSIS_STOP,          //底盘停止
     CHASSIS_OPEN_LOOP,     //底盘开环
+    CHASSIS_STAND_MID,     //底盘开环4
+    CHASSIS_STAND_HIG,     //底盘开环4
     CHASSIS_RECOVERY,      //底盘倒地自起
-    CHASSIS_STAND_LOW,     //底盘站立低姿态
-    CHASSIS_STAND_MID,     //底盘站立中姿态
-    CHASSIS_STAND_HIG,     //底盘站立高姿态
     CHASSIS_OFF_GROUND,    //底盘离地
     CHASSIS_JUMP,          //底盘跳跃模式
     CHASSIS_FOLLOW_GIMBAL, //底盘跟随云台
@@ -31,13 +30,32 @@ typedef enum
 } chassis_mode_e;
 
 /**
+  * @brief     状态枚举
+  */
+typedef enum
+{
+    LEG_LOW = 0,         //低腿长
+    LEG_MID,             //中腿长
+    LEG_HIG,             //高腿长
+}leg_level_e;
+
+/**
   * @brief     底盘回中状态枚举
   */
 typedef enum
 {
     LEG_BACK_STEP = 0,          //腿部正在回中
     LEG_BACK_IS_OK,             //腿部回中完毕
-}leg_state_e;
+}leg_back_state_e;
+
+/**
+  * @brief     底盘倒地状态枚举
+  */
+typedef enum
+{
+    CAHSSIS_IS_FELL = 0,        //机器人倒地
+    CAHSSIS_IS_STAND,           //机器人站立
+}chassis_stand_state_e;
 
 /**
  * @brief 底盘控制任务初始化

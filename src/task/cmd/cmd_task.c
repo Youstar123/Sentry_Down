@@ -1,5 +1,6 @@
 #include "cmd_task.h"
 #include "rm_module.h"
+#include "rm_algorithm.h"
 #include "robot.h"
 
 //static rc_obj_t *rc_now, *rc_last;
@@ -38,7 +39,9 @@ void cmd_control_task(void)
 
     cmd_pub_push();
 }
-
+static float jump_flag=0;
+static float flag=0;
+static float jump_count=0;
 /**
  * @brief 将遥控器数据转换为控制指令
  */
@@ -51,8 +54,8 @@ static void remote_to_cmd(void)
     // TODO: 目前状态机转换较为简单，有很多优化和改进空间
     //遥控器的控制信息转化为标准单位，平移为(mm/s)旋转为(degree/s)
     chassis_cmd_data.vx = rc_now->ch2 * CHASSIS_RC_MOVE_RATIO_X / RC_MAX_VALUE * MAX_CHASSIS_VX_SPEED;
-    chassis_cmd_data.vy = rc_now->ch1 * CHASSIS_RC_MOVE_RATIO_Y / RC_MAX_VALUE * MAX_CHASSIS_VY_SPEED;
-    chassis_cmd_data.vw = rc_now->ch4 * CHASSIS_RC_MOVE_RATIO_R / RC_MAX_VALUE * MAX_CHASSIS_VR_SPEED;
+//    chassis_cmd_data.vy = rc_now->ch1 * CHASSIS_RC_MOVE_RATIO_Y / RC_MAX_VALUE * MAX_CHASSIS_VY_SPEED; // roll 控制，暂时将ch1通道换绑为vw
+    chassis_cmd_data.vw = rc_now->ch1 * CHASSIS_RC_MOVE_RATIO_R / RC_MAX_VALUE * MAX_CHASSIS_VR_SPEED;  // TODO: 暂时换绑为vw
    // TODO: 轮腿前期调试
 /*    chassis_cmd_data.leg_length = rc_now->ch2 * ratio + base;          // 腿长
    chassis_cmd_data.leg_angle = rc_now->ch1 * ratio + base;           // 腿角度*/
@@ -62,62 +65,75 @@ static void remote_to_cmd(void)
    // /* 限制云台角度 */
    // VAL_LIMIT(gim_cmd.pitch, PIT_ANGLE_MIN, PIT_ANGLE_MAX);
 
-   // 左拨杆sw2为上时，底盘和云台均REALX；为中时，云台为GYRO；为下时，云台为AUTO。
-   // 右拨杆sw1为上时，底盘为FOLLOW；为中时，底盘为OPEN；为下时，底盘为SPIN。
+   // 右拨杆sw2为上时，底盘和云台均REALX；为中时，云台为GYRO，地盘为OPEN；为下时，云台为AUTO。
+   // 左拨杆sw1为上时，腿长为LOW；为中时，腿长为MID；为下时，腿长为HIG。（当前暂不考虑遥控器对发射机构的控制）
    switch (rc_now->sw2)
    {
    case RC_UP:
        chassis_cmd_data.ctrl_mode = CHASSIS_RELAX;
        break;
 
-   case RC_DN:
+   case RC_MI:
        if(chassis_fdb.leg_state == LEG_BACK_IS_OK)
        {
-           if(chassis_cmd_data.last_mode == CHASSIS_INIT || chassis_cmd_data.last_mode == CHASSIS_RELAX)
-           {
-               chassis_cmd_data.ctrl_mode = CHASSIS_RECOVERY;
-           }
-           else if(chassis_cmd_data.last_mode == CHASSIS_RECOVERY)
-           {
-               /*if(usr_abs(obs_data.phi) <= 0.05)
-               {*/
-                   chassis_cmd_data.ctrl_mode = CHASSIS_OPEN_LOOP;
-                   if (rc_now->sw1 == RC_MI)
-                   {
-                       chassis_cmd_data.ctrl_mode = CHASSIS_STAND_MID;
-                   }
-               /*}
-               else
-               {
-                   chassis_cmd_data.ctrl_mode = CHASSIS_RECOVERY;
-               }*/
-           }
-           else
-           {
-               chassis_cmd_data.ctrl_mode = CHASSIS_OPEN_LOOP;
-               if (rc_now->sw1 == RC_MI)
-               {
-                   chassis_cmd_data.ctrl_mode = CHASSIS_STAND_MID;
-               }
-
+            if(chassis_cmd_data.last_mode == CHASSIS_INIT || chassis_cmd_data.last_mode == CHASSIS_RELAX)
+            {
+                chassis_cmd_data.ctrl_mode = CHASSIS_RECOVERY;
+            }
+            else if(chassis_cmd_data.last_mode == CHASSIS_RECOVERY)
+            {
+                if(chassis_fdb.stand_state == CAHSSIS_IS_STAND)
+                {
+                    chassis_cmd_data.ctrl_mode = CHASSIS_OPEN_LOOP;
+                }
+                else
+                {
+                    chassis_cmd_data.ctrl_mode = CHASSIS_RECOVERY;
+                }
+            }
+            else
+            {
+                chassis_cmd_data.ctrl_mode = CHASSIS_OPEN_LOOP;
+            }
  /*              if (rc_now->sw1 == RC_DN)
                {   //TODO：增加按钮是否切换判断，切换才触发一次，维持不触发（参考老代码 keyboard 驱动）
                    chassis_cmd_data.ctrl_mode = CHASSIS_JUMP;
                }*/
-           }
-
        }
        else
        {
            chassis_cmd_data.ctrl_mode = CHASSIS_INIT;
        }
+       if(chassis_cmd_data.ctrl_mode == CHASSIS_OPEN_LOOP){
+           jump_flag=1;
+       }else{
+           jump_flag=0;
+       }
        break;
-   }
+    case RC_DN:
+        chassis_cmd_data.ctrl_mode = CHASSIS_OPEN_LOOP;
 
-   if(rc_now->sw1 == RC_DN)
-   {
-       chassis_cmd_data.ctrl_mode = CHASSIS_STOP;
-   }
+       break;
+    }
+
+    switch (rc_now->sw1)
+    {
+    case RC_UP:
+        chassis_cmd_data.leg_level = LEG_LOW;
+        break;
+    case RC_MI:
+        chassis_cmd_data.leg_level = LEG_MID;
+        break;
+    case RC_DN:
+        chassis_cmd_data.ctrl_mode = LEG_HIG;
+        break;
+    default:
+        chassis_cmd_data.leg_level = LEG_LOW;
+        break;
+    }
+    if(chassis_cmd_data.last_mode==CHASSIS_JUMP){
+        flag=1;
+    }
    /* 因为左拨杆值会影响到底盘RELAX状态，所以后判断 */
    /*switch(rc_now->sw3)
    {

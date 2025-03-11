@@ -66,8 +66,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
         if (hcan == &hcan1)
         {
-            if(dji_motot_rx_callback(rx_header.StdId, rx_data) == 0)
-                return;
+            // if(dji_motot_rx_callback(rx_header.StdId, rx_data) == 0)
+            //     return;
 
             if(lk_motot_rx_callback(rx_header.StdId, rx_data) == 0)
                 return;
@@ -88,13 +88,15 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
         // TODO: 2024 RMUL 期间部署上下板间通讯，之后需要优化调整
         if (hcan == &hcan2)
         {
-            if(dji_motot_rx_callback(rx_header.StdId, rx_data) == 0)
-                return;
+            // if(dji_motot_rx_callback(rx_header.StdId, rx_data) == 0)
+            //     return;
 
             if(lk_motot_rx_callback(rx_header.StdId, rx_data) == 0)
                 return;
 
             if(chassis_board_rx_callback(rx_header.StdId, rx_data) == 0)
+                return;
+            if(ht_motot_rx_callback(rx_header.StdId, rx_data) == 0)
                 return;
         }
     }

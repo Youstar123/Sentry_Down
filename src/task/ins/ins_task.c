@@ -124,7 +124,6 @@ __attribute__((noreturn)) void ins_task_entry(void const *argument)
             ins_data.motion_accel_b[2] = ins.motion_accel_b[2];
             mcn_publish(MCN_HUB(ins_topic), &ins_data);
         }
-
         // temperature control
         if ((count % 2) == 0)
         {

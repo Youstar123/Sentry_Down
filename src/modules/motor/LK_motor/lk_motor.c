@@ -11,7 +11,7 @@
 #define LK_MOTOR_CNT 4
 /* 滤波系数设置为1的时候即关闭滤波 */
 #define CURRENT_SMOOTH_COEF 0.9f
-#define SPEED_SMOOTH_COEF 0.85f
+#define SPEED_SMOOTH_COEF 1.0f
 #define ECD_ANGLE_COEF_LK (360.0f / 65536.0f)  // 使用电机编码器为 16 bit
 #define CURRENT_TORQUE_COEF_LK 0.003645f  // 电流设定值转换成扭矩的系数,算出来的设定值除以这个系数就是扭矩值
 
