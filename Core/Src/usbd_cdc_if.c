@@ -276,6 +276,10 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
             {
                 memcpy(&rpy_rx_data,&upper_rx_data,sizeof(rpy_rx_data));
             }break;
+            case CHASSIS_CTRL:
+            {
+                memcpy(&rpy_rx_data,&upper_rx_data,sizeof(rpy_rx_data));
+            }break;
             default:{
                 recv_flag=0;
             }break;

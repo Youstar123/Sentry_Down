@@ -120,7 +120,7 @@ typedef struct
     uint16_t red_2_robot_HP;                    /*! 红 2 工程机器人血量 */
     uint16_t red_3_robot_HP;                    /*! 红 3 步兵机器人血量 */
     uint16_t red_4_robot_HP;                    /*! 红 4 步兵机器人血量 */
-    uint16_t red_5_robot_HP;                    /*! 红 5 步兵机器人血量 */
+    uint16_t reserved1;                          /*! 红 5 步兵机器人血量 */
     uint16_t red_7_robot_HP;                    /*! 红 7 哨兵机器人血量 */
     uint16_t red_outpost_HP;                    /*! 红方前哨战血量 */
     uint16_t red_base_HP;                       /*! 红方基地血量 */
@@ -128,7 +128,7 @@ typedef struct
     uint16_t blue_2_robot_HP;                   /*! 蓝 2 工程机器人血量 */
     uint16_t blue_3_robot_HP;                   /*! 蓝 3 步兵机器人血量 */
     uint16_t blue_4_robot_HP;                   /*! 蓝 4 步兵机器人血量 */
-    uint16_t blue_5_robot_HP;                   /*! 蓝 5 步兵机器人血量 */
+    uint16_t reserved2;                   /*! 蓝 5 步兵机器人血量 */
     uint16_t blue_7_robot_HP;                   /*! 蓝 7 哨兵机器人血量 */
     uint16_t blue_outpost_HP;                   /*! 蓝方前哨站血量 */
     uint16_t blue_base_HP;                      /*! 蓝方基地血量 */

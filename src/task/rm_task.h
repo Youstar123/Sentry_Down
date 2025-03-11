@@ -50,11 +50,11 @@ void OS_task_init()
     osThreadDef(instask, ins_task_entry, osPriorityAboveNormal, 0, 1024);
     insTaskHandle = osThreadCreate(osThread(instask), NULL); // 为姿态解算设置较高优先级,确保以1khz的频率执行
 
-    osThreadDef(motortask, motor_task_entry, osPriorityNormal, 0, 512);
-    motorTaskHandle = osThreadCreate(osThread(motortask), NULL);
-
-    osThreadDef(robottask, robot_task_entry, osPriorityNormal, 0, 2048);
-    robotTaskHandle = osThreadCreate(osThread(robottask), NULL);
+//    osThreadDef(motortask, motor_task_entry, osPriorityNormal, 0, 512);
+//    motorTaskHandle = osThreadCreate(osThread(motortask), NULL);
+//
+//    osThreadDef(robottask, robot_task_entry, osPriorityNormal, 0, 2048);
+//    robotTaskHandle = osThreadCreate(osThread(robottask), NULL);
 
     osThreadDef(transtask, trans_task_entry, osPriorityNormal, 0, 1024);
     transTaskHandle = osThreadCreate(osThread(transtask), NULL);
@@ -63,46 +63,47 @@ void OS_task_init()
     refereeTaskHandle = osThreadCreate(osThread(refereetask), NULL);
 }
 
-__attribute__((noreturn)) void motor_task_entry(void const *argument)
-{
-    float motor_start = dwt_get_time_ms();
-    PrintLog("[freeRTOS] Motor Task Start\n");
-    uint32_t motor_wake_time = osKernelSysTick();
-    for (;;)
-    {
-/* ------------------------------ 调试监测线程调度 ------------------------------ */
-        motor_dt = dwt_get_time_ms() - motor_start;
-        motor_start = dwt_get_time_ms();
-        if (motor_dt > 1.5)
-            PrintLog("[freeRTOS] Motor Task is being DELAY! dt = [%f]\n", &motor_dt);
-/* ------------------------------ 调试监测线程调度 ------------------------------ */
+//__attribute__((noreturn)) void motor_task_entry(void const *argument)
+//{
+//    float motor_start = dwt_get_time_ms();
+//    PrintLog("[freeRTOS] Motor Task Start\n");
+//    uint32_t motor_wake_time = osKernelSysTick();
+//    for (;;)
+//    {
+///* ------------------------------ 调试监测线程调度 ------------------------------ */
+//        motor_dt = dwt_get_time_ms() - motor_start;
+//        motor_start = dwt_get_time_ms();
+//        if (motor_dt > 1.5)
+//            PrintLog("[freeRTOS] Motor Task is being DELAY! dt = [%f]\n", &motor_dt);
+///* ------------------------------ 调试监测线程调度 ------------------------------ */
+//
+//        //motor_control_task();
+//
+//        vTaskDelayUntil(&motor_wake_time, 1);
+//    }
+//}
 
-        motor_control_task();
-
-        vTaskDelayUntil(&motor_wake_time, 1);
-    }
-}
-
-__attribute__((noreturn)) void robot_task_entry(void const *argument)
-{
-    float robot_start = dwt_get_time_ms();
-    PrintLog("[freeRTOS] Robot Task Start\n");
-    uint32_t robot_wake_time = osKernelSysTick();
-    for (;;)
-    {
-/* ------------------------------ 调试监测线程调度 ------------------------------ */
-        robot_dt = dwt_get_time_ms() - robot_start;
-        robot_start = dwt_get_time_ms();
-        if (robot_dt > 5.5)
-            PrintLog("[freeRTOS] Robot Task is being DELAY! dt = [%f]\n", &robot_dt);
-/* ------------------------------ 调试监测线程调度 ------------------------------ */
-
-        cmd_control_task();
-        chassis_control_task();
-
-        vTaskDelayUntil(&robot_wake_time, 1);  // 平衡步兵需要1khz
-    }
-}
+//__attribute__((noreturn)) void robot_task_entry(void const *argument)
+//{
+//    float robot_start = dwt_get_time_ms();
+//    PrintLog("[freeRTOS] Robot Task Start\n");
+//    uint32_t robot_wake_time = osKernelSysTick();
+//    for (;;)
+//    {
+///* ------------------------------ 调试监测线程调度 ------------------------------ */
+//        robot_dt = dwt_get_time_ms() - robot_start;
+//        robot_start = dwt_get_time_ms();
+//        if (robot_dt > 5.5)
+//            PrintLog("[freeRTOS] Robot Task is being DELAY! dt = [%f]\n", &robot_dt);
+///* ------------------------------ 调试监测线程调度 ------------------------------ */
+//
+//        //cmd_control_task();
+//        //chassis_control_task();
+//
+//
+//        vTaskDelayUntil(&robot_wake_time, 1);  // 平衡步兵需要1khz
+//    }
+//}
 
  __attribute__((noreturn)) void trans_task_entry(void const *argument)
 {

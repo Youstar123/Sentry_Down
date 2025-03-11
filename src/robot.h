@@ -33,8 +33,13 @@ struct ins_msg
 // TODO：后续优化启用，目前时间紧急，使用extern
 struct referee_msg
 {
-    robot_status_t robot_status;
-    ext_power_heat_data_t power_heat_data_t;
+    ext_game_status_t                       game_status;
+    robot_status_t                          robot_status;
+    ext_power_heat_data_t                   power_heat_data_t;
+    ext_event_data_t                        field_event;
+    ext_game_robot_HP_t                     game_robot_HP_t;
+    ext_bullet_remaining_t                  bullet_remaining_t;
+    ext_robot_hurt_t                        robot_hurt_t;
 };
 
 /* ----------------CMD应用发布的控制数据,应当由gimbal/chassis/shoot订阅---------------- */
@@ -50,9 +55,9 @@ struct chassis_cmd_msg
     float leg_length;          // 腿长
     float leg_angle;           // 腿角度
     float offset_angle;        // 底盘和归中位置的夹角
-    leg_state_e leg_state;     // 腿部归中初始化情况
     chassis_mode_e ctrl_mode;  // 当前底盘控制模式
     chassis_mode_e last_mode;  // 上一次底盘控制模式
+    leg_level_e leg_level;     // 腿长等级
 };
 
 /* ------------------------------ chassis反馈状态数据 ------------------------------ */
@@ -61,7 +66,8 @@ struct chassis_cmd_msg
  */
 struct chassis_fdb_msg
 {
-    enum leg_state_e leg_state;  // 腿部归中初始化情况
+    leg_back_state_e leg_state;  // 腿部归中初始化情况
+    chassis_stand_state_e stand_state;  // 机器人站立状态
     /*  底盘任务使用到的电机句柄,仅能对其 measure 成员当作传感器数据读取，禁止改写 */
     lk_motor_measure_t lk_l;   // 左轮毂电机
     lk_motor_measure_t lk_r;   // 右轮毂电机
@@ -74,8 +80,16 @@ struct chassis_fdb_msg
  */
 struct trans_fdb_msg
 {
-   float yaw;
-   float pitch;
+    float yaw;
+    float pitch;
+    float linear_x;
+    float linear_y;
+    float linear_z;
+    float angular_x;
+    float angular_y;
+    float angular_z;
+    float raw_linear_x;
+    float raw_linear_y;
 };
 
 #endif

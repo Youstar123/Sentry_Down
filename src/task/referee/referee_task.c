@@ -5,7 +5,17 @@
 /* ------------------------------- ipc 线程间通讯相关 ------------------------------ */
 MCN_DECLARE(referee_topic);
 static struct referee_msg referee_data;
-
+static void referee_pub_push(void);
+static void referee_sub_init(void);
+static void referee_sub_pull(void);
+/* ------------------------------- 裁判系统数据 ------------------------------ */
+extern ext_game_status_t                       game_status;
+extern robot_status_t                          robot_status;
+extern ext_power_heat_data_t                   power_heat_data_t;
+extern ext_event_data_t                        field_event;
+extern ext_game_robot_HP_t                     game_robot_HP_t;
+extern ext_bullet_remaining_t                  bullet_remaining_t;
+extern ext_robot_hurt_t                        robot_hurt_t;
 /* ---------------------------- Attitude_Solving ---------------------------- */
 static void referee_UI_update_handle(void);
 
@@ -21,26 +31,19 @@ static int Refresh_flag30=0;//准心更新标志位
 /* ---------------------------- Attitude_Solving ---------------------------- */
 void referee_control_task(void)
 {
-
+        referee_sub_pull();
         referee_UI_update_handle();
 
         {/* publish msg */
-
         // TODO : 请在此处添加裁判系统数据的发布
-            // ins_data.yaw = -ins.yaw;
-            // ins_data.roll = ins.pitch;
-            // ins_data.yaw_total_angle = -ins.yaw_total_angle;
-            // ins_data.pitch = ins.roll;
-            // ins_data.gyro[0] =-ins.gyro[0];
-            // ins_data.gyro[1] = ins.gyro[1];
-            // ins_data.gyro[2] =-ins.gyro[2];
-            // ins_data.accel[0] = ins.accel[0];
-            // ins_data.accel[1] = ins.accel[1];
-            // ins_data.accel[2] = ins.accel[2];
-            // ins_data.motion_accel_b[0] = ins.motion_accel_b[0];
-            // ins_data.motion_accel_b[1] = ins.motion_accel_b[1];
-            // ins_data.motion_accel_b[2] = ins.motion_accel_b[2];
-            // mcn_publish(MCN_HUB(ins_topic), &ins_data);
+            referee_data.field_event = field_event;
+            referee_data.game_status =  game_status;
+            referee_data.bullet_remaining_t = bullet_remaining_t;
+            referee_data.power_heat_data_t = power_heat_data_t;
+            referee_data.robot_hurt_t = robot_hurt_t;
+            referee_data.robot_status = robot_status;
+            referee_data.game_robot_HP_t = game_robot_HP_t;
+            referee_pub_push();
         }
 }
 
@@ -233,4 +236,31 @@ void USART6_IRQHandler(void)
         }
     }
     HAL_UART_IRQHandler(&huart6);
+}
+/* --------------------------------- 线程间通讯相关 -------------------------------- */
+/**
+ * @brief referee 线程中所有发布者推送更新话题
+ */
+static void referee_pub_push(void)
+{
+    mcn_publish(MCN_HUB(referee_topic), &referee_data);
+}
+
+/**
+ * @brief referee 线程中所有订阅者初始化
+ */
+static void referee_sub_init(void)
+{
+    //ins_topic_node = mcn_subscribe(MCN_HUB(ins_topic), NULL, NULL);
+}
+
+/**
+ * @brief referee 线程中所有订阅者获取更新话题
+ */
+static void referee_sub_pull(void)
+{
+//    if (mcn_poll(ins_topic_node))
+//    {
+//        mcn_copy(MCN_HUB(ins_topic), ins_topic_node, &ins);
+//    }
 }
