@@ -247,6 +247,7 @@ static void get_data(void)
         if(trans_fdb_data.linear_z==1){
             trans_fdb_data.linear_x = 0;
             trans_fdb_data.linear_y = 0;
+            trans_fdb_data.angular_z =0;
         }
     }
 }
