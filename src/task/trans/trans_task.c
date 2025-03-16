@@ -65,6 +65,7 @@ static void pack_rpy(RpyTypeDef *frame, float yaw, float pitch,float roll);
 static void check_rpy(RpyTypeDef *frame);
 extern void CAN_send(CAN_HandleTypeDef *can, uint32_t send_id, uint8_t data[]);
 static void Can_send_gimbal(float data1_original,float data2_original, uint32_t send_id);
+static void Can_send_gimbal2(uint16_t data1, uint16_t data2, uint8_t data3, uint8_t data4, uint16_t data5, uint32_t send_id);
 /* ------------------------------- 接受数据指令 ------------------------------ */
 static void get_data(void);
 /* -------------------------------- trans线程主体 -------------------------------- */
@@ -130,10 +131,11 @@ static void send_data(OdomTypeDef data_o)
     CDC_Transmit_FS((uint8_t*)&data_o, sizeof(data_o));
 
     Can_send_gimbal(ins.gyro[2],ins.yaw_total_angle,send_msg_gimbal[0].id);
-    Can_send_gimbal(trans_fdb_data.angular_x,trans_fdb_data.angular_y,send_msg_gimbal[1].id);
+    Can_send_gimbal2(referee_data.robot_status.chassis_power_limit,referee_data.power_heat_data_t.buffer_energy,referee_data.robot_status.robot_id,referee_data.game_status.game_progress,(referee_data.power_heat_data_t.shooter_id1_17mm_cooling_heat + referee_data.power_heat_data_t.shooter_id2_17mm_cooling_heat),send_msg_gimbal[1].id);
     Can_send_gimbal(trans_fdb_data.angular_z,trans_fdb_data.linear_x,send_msg_gimbal[2].id);
     Can_send_gimbal(trans_fdb_data.linear_y,trans_fdb_data.linear_z,send_msg_gimbal[3].id);
-}
+   }
+
 static void pack_odom(OdomTypeDef *frame, float data1, float data2, float data3, float data4, float data5, float data6, float data7, float data8, float data9, float data10, float data11, float data12, float data13, float data14, float data15, float data16, float data17, float data18, float data19, float data20, float data21) {
     int8_t odom_tx_buffer[FRAME_ODOM_LEN] = {0};
     int32_t odom_data1 = 0;
@@ -270,6 +272,23 @@ static void Can_send_gimbal(float data1_original,float data2_original, uint32_t 
     data_send.data[4] = *temp_data2;
 
     CAN_send(&hcan2, send_id, data_send.data); // 发送报文
+}
+static void Can_send_gimbal2(uint16_t data1, uint16_t data2, uint8_t data3, uint8_t data4, uint16_t data5, uint32_t send_id) {
+    // 将数据打包到 data_send.data 数组中
+    data_send.data[0] = (data1 >> 8) & 0xFF;  // data1 的高字节
+    data_send.data[1] = data1 & 0xFF;         // data1 的低字节
+
+    data_send.data[2] = (data2 >> 8) & 0xFF;  // data2 的高字节
+    data_send.data[3] = data2 & 0xFF;         // data2 的低字节
+
+    data_send.data[4] = data3;                // data3（uint8_t）
+    data_send.data[5] = data4;                // data4（uint8_t）
+
+    data_send.data[6] = (data5 >> 8) & 0xFF;  // data5 的高字节
+    data_send.data[7] = data5 & 0xFF;         // data5 的低字节
+
+    // 发送 CAN 报文
+    CAN_send(&hcan2, send_id, data_send.data);
 }
 
 /* --------------------------------- 线程间通讯相关 -------------------------------- */

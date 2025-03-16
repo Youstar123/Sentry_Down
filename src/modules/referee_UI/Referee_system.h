@@ -319,10 +319,10 @@ typedef struct
  */
 typedef  struct
 {
-    uint16_t chassis_volt;                             /*!底盘输出电压*/
-    uint16_t chassis_current;                          /*!底盘输出电流*/
-    float chassis_power;                               /*!底盘输出功率*/
-    uint16_t chassis_power_buffer;                     /*!底盘功率缓存*/
+    uint16_t reserved1;                                /*!保留*/
+    uint16_t reserved2;                                /*!保留*/
+    float reserved3;                                   /*!保留*/
+    uint16_t buffer_energy;                            /*!底盘功率缓存*/
     uint16_t shooter_id1_17mm_cooling_heat;            /*!机器人1 号 17mm 枪口热量*/
     uint16_t shooter_id2_17mm_cooling_heat;            /*!机器人2 号 17mm 枪口热量*/
     uint16_t shooter_id1_42mm_cooling_heat;            /*!机器人42mm 枪口热量*/
